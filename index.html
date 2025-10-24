@@ -1,103 +1,612 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Power BI Dashboard</title>
+  <meta name="description" content="Projet Gestion des Stocks - Analyse Power BI" />
+  <title>Gestion des Stocks - Dashboard Analytics</title>
+  
   <style>
-    /* Global Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ============================================
+       RESET & GLOBAL
+    ============================================ */
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body { 
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F8F9FA;
+      color: #2C3E50;
+      line-height: 1.6;
     }
 
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
+    /* ============================================
+       HEADER - Bleu foncé Power BI
+    ============================================ */
+    header {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2A4A6F 100%);
+      color: #FFFFFF;
+      padding: 25px 40px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      padding: 40px 20px;
+      flex-wrap: wrap;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .logo-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    header h1 { 
+      font-size: 1.6rem; 
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+    
+    nav {
+      display: flex;
+      gap: 10px;
+    }
+    
+    nav a {
+      color: #FFFFFF;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+    
+    nav a:hover { 
+      background: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+    
+    .nav-active {
+      background: rgba(255,107,53,0.3);
     }
 
-    h1 {
-      font-size: 2.5rem;
+    /* ============================================
+       HERO SECTION - Background clair
+    ============================================ */
+    .hero {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F0F4F8 100%);
+      padding: 50px 20px;
       text-align: center;
+      border-bottom: 1px solid #E8ECF1;
+    }
+    
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .hero h2 {
+      font-size: 2.8rem;
+      color: #1E3A5F;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: #5A6C7D;
       margin-bottom: 10px;
-      letter-spacing: 1px;
-      animation: fadeIn 1s ease-in-out;
+    }
+    
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+    
+    .team-info {
+      font-size: 0.9rem;
+      color: #7B8794;
+      margin-top: 20px;
+      font-style: italic;
     }
 
-    p.subtitle {
-      font-size: 1.1rem;
-      margin-bottom: 30px;
-      opacity: 0.9;
-      animation: fadeIn 1.5s ease-in-out;
+    /* ============================================
+       KPI CARDS - Couleurs palette Power BI
+    ============================================ */
+    .kpi-section {
+      max-width: 1400px;
+      margin: -30px auto 50px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .kpi-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+    }
+    
+    .kpi-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    /* Couleur KPI 1 - Bleu (Opérations) */
+    .kpi-1::before { background: linear-gradient(90deg, #4A90E2 0%, #357ABD 100%); }
+    .kpi-1 .kpi-icon { color: #4A90E2; }
+    
+    /* Couleur KPI 2 - Rouge (Ruptures) */
+    .kpi-2::before { background: linear-gradient(90deg, #E74C3C 0%, #C0392B 100%); }
+    .kpi-2 .kpi-icon { color: #E74C3C; }
+    
+    /* Couleur KPI 3 - Orange (Écarts) */
+    .kpi-3::before { background: linear-gradient(90deg, #FF6B35 0%, #F7931E 100%); }
+    .kpi-3 .kpi-icon { color: #FF6B35; }
+    
+    /* Couleur KPI 4 - Gris (Stagnants) */
+    .kpi-4::before { background: linear-gradient(90deg, #7F8C8D 0%, #95A5A6 100%); }
+    .kpi-4 .kpi-icon { color: #7F8C8D; }
+    
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .kpi-icon {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+    
+    .kpi-card h3 {
+      font-size: 0.95rem;
+      color: #7B8794;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .kpi-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #1E3A5F;
+      margin-bottom: 8px;
+    }
+    
+    .kpi-label {
+      font-size: 0.9rem;
+      color: #95A5A6;
+    }
+    
+    .kpi-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    .trend-up { background: #D4EDDA; color: #155724; }
+    .trend-down { background: #F8D7DA; color: #721C24; }
+
+    /* ============================================
+       DASHBOARD CONTAINER
+    ============================================ */
+    main { 
+      max-width: 1400px; 
+      margin: 0 auto 60px; 
+      padding: 0 20px; 
+    }
+
+    .section-title {
+      text-align: center;
+      margin: 50px 0 35px;
+      color: #1E3A5F;
+      font-size: 2rem;
+      font-weight: 700;
     }
 
     .dashboard-container {
-      width: 100%;
-      max-width: 1200px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      background: #FFFFFF;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
       overflow: hidden;
-      animation: slideUp 1s ease;
+      border: 1px solid #E8ECF1;
+    }
+    
+    .dashboard-header {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2A4A6F 100%);
+      color: white;
+      padding: 25px 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .dashboard-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.15);
+      padding: 8px 16px;
+      border-radius: 25px;
+      font-size: 0.9rem;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #2ECC71;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
     iframe {
       width: 100%;
-      height: 80vh;
+      height: 85vh;
       border: none;
-      border-radius: 0 0 16px 16px;
+      display: block;
+      background: #F8F9FA;
     }
-
-    footer {
-      margin-top: 30px;
-      font-size: 0.9rem;
-      color: #e0e0e0;
+    
+    .iframe-placeholder {
+      width: 100%;
+      height: 85vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #F8F9FA 0%, #E8ECF1 100%);
+      color: #7B8794;
+    }
+    
+    .iframe-placeholder-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .iframe-placeholder h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #5A6C7D;
+    }
+    
+    .iframe-placeholder p {
+      font-size: 1rem;
+      max-width: 500px;
       text-align: center;
-      opacity: 0.8;
+      line-height: 1.6;
     }
 
-    footer a {
-      color: #ffd700;
+    /* ============================================
+       INFO SECTION
+    ============================================ */
+    .info-section {
+      max-width: 1400px;
+      margin: 60px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+    
+    .info-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border-left: 4px solid;
+    }
+    
+    .info-card.info-alert { border-color: #E74C3C; }
+    .info-card.info-warning { border-color: #FF6B35; }
+    .info-card.info-success { border-color: #2ECC71; }
+    
+    .info-card h4 {
+      color: #1E3A5F;
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .info-card li {
+      padding: 10px 0;
+      border-bottom: 1px solid #F0F4F8;
+      color: #5A6C7D;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .info-card li:last-child {
+      border-bottom: none;
+    }
+    
+    .list-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+      min-width: 20px;
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    footer {
+      background: linear-gradient(135deg, #1E3A5F 0%, #2A4A6F 100%);
+      color: #FFFFFF;
+      padding: 40px 20px;
+      margin-top: 80px;
+    }
+    
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .footer-content p {
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    
+    .footer-divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #FF6B35 0%, #F7931E 100%);
+      margin: 20px auto;
+      border-radius: 2px;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: #FFFFFF;
       text-decoration: none;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+    
+    .footer-links a:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-2px);
     }
 
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.3rem; }
+      nav { 
+        width: 100%;
+        margin-top: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .hero h2 { font-size: 2rem; }
+      .hero-subtitle { font-size: 1rem; }
+      iframe, .iframe-placeholder { height: 60vh; }
+      .kpi-section {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-header {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>📊 My Power BI Dashboard</h1>
-  <p class="subtitle">Real-time insights, accessible anywhere</p>
 
-  <div class="dashboard-container">
-    <iframe
-      src="https://app.powerbi.com/reportEmbed?reportId=8ea8480c-227f-4425-a4d6-00074945999a&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730"
+  <!-- ============================================
+       HEADER
+  ============================================ -->
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <h1>Gestion des Stocks</h1>
+      </div>
+      <nav>
+        <a href="#dashboard" class="nav-active">Dashboard</a>
+        <a href="#kpis">KPIs</a>
+        <a href="#insights">Insights</a>
+
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============================================
+       HERO SECTION
+  ============================================ -->
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Projet Informatique Décisionnelle</h2>
+      <p class="hero-subtitle">Analyse & Optimisation de la Gestion des Stocks</p>
+    
+    </div>
+  </section>
+
+  <!-- ============================================
+       KPI CARDS
+  ============================================ -->
+  
+
+  <!-- ============================================
+       MAIN DASHBOARD
+  ============================================ -->
+  <main>
+    <h2 class="section-title" id="dashboard">📈 Tableau de Bord Interactif</h2>
+
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <div class="dashboard-title">
+          <span>🎯</span>
+          Power BI Analytics Dashboard
+        </div>
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>En ligne</span>
+        </div>
+      </div>
+      
+      <!-- OPTION 1 : Iframe Power BI (remplace l'URL) -->
+      <iframe
+        src="https://app.powerbi.com/reportEmbed?reportId=8ea8480c-227f-4425-a4d6-00074945999a&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730"
       allowfullscreen="true">
-    </iframe>
-  </div>
+      </iframe>
+      
+      <!-- OPTION 2 : Placeholder si pas de lien encore -->
+      <!--
+      <div class="iframe-placeholder">
+        <div class="iframe-placeholder-icon">📊</div>
+        <h3>Dashboard Power BI</h3>
+        <p>
+          Remplacez <code>VOTRE_LIEN_POWER_BI_ICI</code> dans le code HTML 
+          par votre lien "Publish to Web" depuis Power BI Desktop.
+        </p>
+      </div>
+      -->
+    </div>
+  </main>
 
+  <!-- ============================================
+       INSIGHTS SECTION
+  ============================================ -->
+  <section class="info-section" id="insights">
+    <div class="info-card info-success">
+      <h4>✅ Points Forts</h4>
+      <ul>
+        <li><span class="list-icon">📦</span> Data Warehouse opérationnel avec 9 tables</li>
+        <li><span class="list-icon">📊</span> 4 KPI stratégiques définis et calculés</li>
+        <li><span class="list-icon">🎯</span> Tableaux de bord Power BI interactifs</li>
+        <li><span class="list-icon">💡</span> Insights actionnables identifiés</li>
+      </ul>
+    </div>
+    
+    <div class="info-card info-alert">
+      <h4>🔴 Actions Urgentes</h4>
+      <ul>
+        <li><span class="list-icon">⚠️</span> Réapprovisionner famille FGM (602 ruptures)</li>
+        <li><span class="list-icon">📉</span> Lancer plan liquidation (5T immobilisés)</li>
+        <li><span class="list-icon">🔍</span> Auditer écarts inventaire (2M unités)</li>
+        <li><span class="list-icon">💰</span> Optimiser coûts approvisionnement</li>
+      </ul>
+    </div>
+    
+    <div class="info-card info-warning">
+      <h4>⚡ Recommandations</h4>
+      <ul>
+        <li><span class="list-icon">🤖</span> Implémenter système prévisionnel automatisé</li>
+        <li><span class="list-icon">📱</span> Déployer app mobile inventaire temps réel</li>
+        <li><span class="list-icon">📈</span> Renforcer contrôles qualité des données</li>
+        <li><span class="list-icon">🎓</span> Former équipes aux nouveaux outils BI</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+  ============================================ -->
   <footer>
-    Created with 4DS3 by <a href="https://github.com/yourusername" target="_blank">Your Name</a>
+    <div class="footer-content">
+      <p><strong>Projet Gestion des Stocks</strong></p>
+      <p>Initiation à l'Informatique Décisionnelle</p>
+      <div class="footer-divider"></div>
+      <p>4ème Data Science 3 • Année universitaire 2024-2025</p>
+      
+      <div class="footer-links">
+        <a href="https://github.com/VOTRE-USERNAME/VOTRE-REPO" target="_blank">
+          <span>📂</span> GitHub
+        </a>
+        <a href="rapport.pdf" target="_blank">
+          <span>📄</span> Rapport PDF
+        </a>
+        <a href="mailto:votre.email@example.com">
+          <span>📧</span> Contact
+        </a>
+      </div>
+    </div>
   </footer>
+
 </body>
 </html>
